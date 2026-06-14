@@ -1,6 +1,7 @@
 # 🎓 LearnoHub
 
-### Learn Anything. Anytime. Guided by AI.
+### Turning Curiosity into Structured Learning with AI.
+
 
 LearnoHub is an AI-powered educational platform that transforms static learning resources into personalized learning experiences. The platform enables students and lifelong learners to upload educational content, generate structured learning modules, track progress, discover relevant opportunities, and explore new domains through AI-generated learning paths.
 
