@@ -1,0 +1,179 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+body{
+    background:#f8fafc;
+    color:#1e293b;
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+    padding:40px;
+}
+
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:30px;
+}
+
+.header a{
+    text-decoration:none;
+    color:#2563eb;
+    font-weight:600;
+}
+
+.tabs{
+    display:flex;
+    gap:15px;
+    margin-bottom:30px;
+}
+
+.tab{
+    border:none;
+    background:white;
+    padding:15px 25px;
+    border-radius:12px;
+    cursor:pointer;
+    font-weight:600;
+    box-shadow:0 5px 15px rgba(0,0,0,.05);
+}
+
+.tab.active{
+    background:#2563eb;
+    color:white;
+}
+
+.content{
+    display:none;
+}
+
+.active-content{
+    display:block;
+}
+
+.content h2{
+    margin-bottom:15px;
+    margin-top:20px;
+}
+
+.content p{
+    line-height:1.8;
+}
+
+.content ul{
+    margin-left:20px;
+    margin-top:15px;
+}
+
+.video-card{
+    background:white;
+    padding:25px;
+    border-radius:20px;
+    box-shadow:0 10px 25px rgba(0,0,0,.05);
+}
+.quiz-card{
+
+    background:white;
+
+    padding:20px;
+
+    margin-top:15px;
+
+    border-radius:15px;
+
+    box-shadow:
+    0 5px 15px rgba(
+        0,0,0,.05
+    );
+
+}
+.lesson-box{
+
+    background:white;
+
+    padding:25px;
+
+    margin-bottom:20px;
+
+    border-radius:20px;
+
+    box-shadow:
+    0 8px 20px rgba(
+        0,0,0,.05
+    );
+
+}
+
+.video-learning-card{
+
+    background:white;
+
+    padding:25px;
+
+    margin-bottom:20px;
+
+    border-radius:20px;
+
+    box-shadow:
+    0 8px 20px rgba(
+        0,0,0,.05
+    );
+
+}
+
+.video-level{
+
+    background:#2563eb;
+
+    color:white;
+
+    padding:8px 15px;
+
+    border-radius:10px;
+
+    font-size:.9rem;
+
+    font-weight:600;
+
+    display:inline-block;
+
+    margin-bottom:15px;
+
+}
+
+.watch-btn{
+
+    display:inline-block;
+
+    margin-top:15px;
+
+    background:#2563eb;
+
+    color:white;
+
+    text-decoration:none;
+
+    padding:12px 20px;
+
+    border-radius:12px;
+
+    font-weight:600;
+
+    transition:.3s;
+
+}
+
+.watch-btn:hover{
+
+    transform:translateY(-2px);
+
+}

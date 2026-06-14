@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Learnopedia Module</title>
+
+<link rel="stylesheet" href="css/module.css">
+
+</head>
+<body>
+
+<div class="container">
+
+    <div class="header">
+
+        <h1 id="moduleTitle">
+            Loading Module...
+        </h1>
+
+        <a href="dashboard.html">
+            ← Back to Dashboard
+        </a>
+
+    </div>
+
+    <div class="tabs">
+
+        <button
+            class="tab active"
+            onclick="showTab('notes')"
+        >
+            📖 AI Notes
+        </button>
+
+        <button
+            class="tab"
+            onclick="showTab('videos')"
+        >
+            🎥 Video Learning
+        </button>
+
+    </div>
+
+    <!-- AI NOTES -->
+
+    <div
+        id="notes"
+        class="content active-content"
+    >
+
+        <div class="lesson-box">
+
+            <h2>
+                Loading AI Lesson...
+            </h2>
+
+        </div>
+
+    </div>
+
+    <!-- VIDEO LEARNING -->
+
+    <div
+        id="videos"
+        class="content"
+    >
+
+        <div class="video-learning-card">
+
+            <h3>
+                Loading Video Learning Path...
+            </h3>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+const selectedTopic =
+JSON.parse(
+    localStorage.getItem(
+        "selectedTopic"
+    )
+);
+
+document.getElementById(
+    "moduleTitle"
+).innerText =
+selectedTopic.topic;
+/* =========================
+   INITIAL LOAD
+========================= */
+
+loadLesson();
+loadVideos();
+
+/* =========================
+   LOAD LESSON
+========================= */
+
+async function loadLesson(){
+
+    try{
+
+        const response =
+        await fetch(
+            "http://localhost:5000/api/module",
+            {
+                method:"POST",
+
+                headers:{
+                    "Content-Type":
+                    "application/json"
+                },
+
+               body: JSON.stringify({
+    module: selectedTopic.module,
+    topic: selectedTopic.topic
+})
+            }
+        );
+
+        const lesson =
+        await response.json();
+
+        renderLesson(
+            lesson
+        );
+
+    }
+
+    catch(error){
+
+        console.error(error);
+
+        document.getElementById(
+            "notes"
+        ).innerHTML = `
+
+        <div class="lesson-box">
+
+            <h2>
+                Failed To Load Lesson
+            </h2>
+
+        </div>
+
+        `;
+
+    }
+
+}
+
+/* =========================
+   LOAD VIDEOS
+========================= */
+
+async function loadVideos(){
+
+    try{
+
+        const response =
+        await fetch(
+            "http://localhost:5000/api/videos",
+            {
+                method:"POST",
+
+                headers:{
+                    "Content-Type":
+                    "application/json"
+                },
+
+                body:JSON.stringify({
+                    module:selectedTopic.module,
+                    topic: selectedTopic.topic
+                })
+            }
+        );
+
+        const data =
+        await response.json();
+
+        console.log("VIDEO DATA:", data);
+        renderVideos(
+            data
+        );
+
+    }
+
+    catch(error){
+
+        console.error(error);
+
+        document.getElementById(
+            "videos"
+        ).innerHTML = `
+
+        <div class="video-learning-card">
+
+            <h3>
+                Failed To Load Videos
+            </h3>
+
+        </div>
+
+        `;
+
+    }
+
+}
+
+/* =========================
+   RENDER LESSON
+========================= */
+
+function renderLesson(lesson){
+
+    let html = `
+
+    <div class="lesson-box">
+
+        <h2>Introduction</h2>
+
+        <p>
+            ${lesson.introduction}
+        </p>
+
+    </div>
+
+    `;
+
+    lesson.sections.forEach(section=>{
+
+        html += `
+
+        <div class="lesson-box">
+
+            <h2>
+                ${section.heading}
+            </h2>
+
+            <p>
+                ${section.content}
+            </p>
+
+        </div>
+
+        `;
+
+    });
+
+    html += `
+
+    <div class="lesson-box">
+
+        <h2>
+            Summary
+        </h2>
+
+        <p>
+            ${lesson.summary}
+        </p>
+
+    </div>
+
+    <button
+        class="complete-btn"
+        onclick="markComplete()"
+    >
+        ✅ Mark Topic Complete
+    </button>
+
+    <h2>
+        Quiz
+    </h2>
+
+    `;
+
+    lesson.quiz.forEach((q,index)=>{
+
+        html += `
+
+        <div class="quiz-card">
+
+            <strong>
+                Q${index+1}
+            </strong>
+
+            <p>
+                ${q.question}
+            </p>
+
+            <hr>
+
+            <p>
+
+                <strong>
+                    Answer:
+                </strong>
+
+                ${q.answer}
+
+            </p>
+
+        </div>
+
+        `;
+
+    });
+
+    document.getElementById(
+        "notes"
+    ).innerHTML = html;
+
+}
+/* =========================
+   RENDER VIDEOS
+========================= */
+
+function renderVideos(data){
+
+    let html = "";
+
+    data.videos.forEach(video=>{
+
+        html += `
+
+        <div class="video-learning-card">
+
+            <h3>
+                ${video.title}
+            </h3>
+
+            <a
+                href="https://www.youtube.com/watch?v=${video.videoId}"
+                target="_blank"
+                class="watch-btn"
+            >
+                Watch On YouTube
+            </a>
+
+        </div>
+
+        `;
+
+    });
+
+    document.getElementById(
+        "videos"
+    ).innerHTML = html;
+
+}
+function markComplete(){
+
+    let completedTopics =
+    JSON.parse(
+        localStorage.getItem(
+            "completedTopics"
+        )
+    ) || {};
+
+    completedTopics[
+        selectedTopic.topic
+    ] = true;
+
+    localStorage.setItem(
+        "completedTopics",
+        JSON.stringify(
+            completedTopics
+        )
+    );
+
+    alert(
+        "Topic Completed 🎉"
+    );
+    location.reload();
+
+}
+/* =========================
+   TAB SWITCHER
+========================= */
+
+function showTab(tabId){
+
+    const tabs =
+    document.querySelectorAll(".tab");
+
+    const contents =
+    document.querySelectorAll(".content");
+
+    tabs.forEach(tab=>{
+
+        tab.classList.remove(
+            "active"
+        );
+
+    });
+
+    contents.forEach(content=>{
+
+        content.classList.remove(
+            "active-content"
+        );
+
+    });
+
+    if(tabId==="notes"){
+
+        tabs[0].classList.add(
+            "active"
+        );
+
+    }
+    else{
+
+        tabs[1].classList.add(
+            "active"
+        );
+
+    }
+
+    document
+    .getElementById(tabId)
+    .classList
+    .add("active-content");
+
+}
+
+</script>
+</body>
+</html>

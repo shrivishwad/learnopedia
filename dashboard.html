@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Learnopedia</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div class="brand">
+            <img src="logo.png" alt="logo">
+            <h2>Learnopedia</h2>
+        </div>
+
+        <ul>
+            <li class="active">🏠 Dashboard</li>
+            <li>📚 My Courses</li>
+            <li>📝 Quizzes</li>
+            <li>📊 Progress</li>
+            <li>⚙️ Settings</li>
+        </ul>
+
+    </aside>
+
+    <!-- MAIN CONTENT -->
+
+    <main class="main-content">
+
+        <!-- TOPBAR -->
+
+        <div class="topbar">
+
+            <div>
+                <h1>Hello, Learner 👋</h1>
+
+                <p id="courseName">
+                    Loading Course...
+                </p>
+            </div>
+
+            <a href="upload.html" class="new-course-btn">
+                + Start New Course
+            </a>
+
+        </div>
+
+        <!-- STATS -->
+
+        <section class="stats">
+
+            <div class="stat-card">
+                <h2 id="courseCount">1</h2>
+                <p>Courses</p>
+            </div>
+
+            <div class="stat-card">
+                <h2 id="moduleCount">0</h2>
+<p>Modules</p>
+
+<p style="margin-top:10px;">
+    Overall Progress
+</p>
+
+<h2 id="progressPercent">0%</h2>
+            </div>
+
+            <div class="stat-card">
+    <h2 id="completedCount">0</h2>
+    <p>Completed Topics</p>
+</div>
+
+            <div class="stat-card">
+                <h2 id="streakCount">0</h2>
+<p>Study Streak</p>
+            </div>
+
+        </section>
+
+        <!-- MODULES -->
+
+        <section class="courses">
+
+            <div class="section-title">
+
+                <h2>Generated Learning Modules</h2>
+
+                <span>AI Generated</span>
+
+            </div>
+
+            <div class="course-grid" id="courseGrid">
+
+                <!-- Dynamic Cards Appear Here -->
+
+            </div>
+
+        </section>
+
+        <!-- ACTIVITY -->
+
+        <section class="activity">
+
+            <div class="section-title">
+                <h2>Roadmap Status</h2>
+            </div>
+
+            <div class="activity-box">
+
+                <div class="activity-item">
+                    🚀 Roadmap Generated Successfully
+                </div>
+
+                <div class="activity-item">
+                    🧠 AI Learning Path Created
+                </div>
+
+                <div class="activity-item">
+                    📚 Modules Ready To Study
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+<script>
+
+const roadmap =
+JSON.parse(
+    localStorage.getItem("roadmap")
+);
+const completedTopics =
+JSON.parse(
+    localStorage.getItem(
+        "completedTopics"
+    )
+) || {};
+const courseGrid =
+document.getElementById("courseGrid");
+
+const courseName =
+document.getElementById("courseName");
+
+const moduleCount =
+document.getElementById("moduleCount");
+
+const progressPercent =
+document.getElementById(
+    "progressPercent"
+);
+
+const completedCountElement =
+document.getElementById(
+    "completedCount"
+);
+
+/* =========================
+   OPEN MODULE
+========================= */
+
+function openModule(index){
+
+    const module =
+    roadmap.modules[index];
+
+    localStorage.setItem(
+        "selectedModule",
+        JSON.stringify(module)
+    );
+
+    console.log(
+        "Saved Module:",
+        module
+    );
+
+        window.location.href =
+"topics.html";
+
+
+}
+
+/* =========================
+   LOAD DASHBOARD
+========================= */
+
+if(
+    roadmap &&
+    roadmap.modules
+){
+
+    courseName.innerText =
+    roadmap.course;
+
+    let totalTopics = 0;
+
+roadmap.modules.forEach(
+    module => {
+
+    totalTopics +=
+    module.topics.length;
+
+});
+
+const completedCount =
+Object.keys(
+    completedTopics
+).length;
+
+const progress =
+totalTopics > 0
+?
+Math.round(
+(
+    completedCount /
+    totalTopics
+) * 100
+)
+:
+0;
+
+progressPercent.innerText =
+progress + "%";
+completedCountElement.innerText =
+completedCount;
+    moduleCount.innerText =
+    roadmap.modules.length;
+
+    roadmap.modules.forEach(
+        (
+            module,
+            index
+        ) => {
+            let moduleCompleted = 0;
+
+module.topics.forEach(topic => {
+
+    console.log(
+        "Checking:",
+        topic,
+        completedTopics[topic]
+    );
+
+    if(completedTopics[topic]){
+        moduleCompleted++;
+    }
+
+});
+
+const moduleProgress =
+module.topics.length > 0
+?
+Math.round(
+(
+    moduleCompleted /
+    module.topics.length
+) * 100
+)
+:
+0;
+console.log(
+    "MODULE:",
+    module.title
+);
+
+console.log(
+    "COMPLETED:",
+    moduleCompleted
+);
+
+console.log(
+    "TOTAL TOPICS:",
+    module.topics.length
+);
+
+console.log(
+    "PROGRESS:",
+    moduleProgress + "%"
+);
+
+console.log(
+    "----------------"
+);
+
+
+console.log(
+    module.title,
+    moduleCompleted,
+    module.topics.length,
+    moduleProgress + "%"
+);
+
+        courseGrid.innerHTML += `
+
+        <div class="course-card">
+
+            <h3>
+                ${
+moduleProgress === 100
+?
+"✅"
+:
+"📘"
+}
+${module.title}
+            </h3>
+
+            <p>
+                Duration:
+                ${module.duration}
+            </p>
+
+            <div class="progress-bar">
+
+    <div
+        class="progress-fill"
+        style="width:${moduleProgress}%"
+    ></div>
+
+</div>
+
+<p class="progress-text">
+    Progress: ${moduleProgress}%
+</p>
+
+            <button
+                onclick="openModule(${index})"
+            >
+                Start Module
+            </button>
+            </div>
+
+
+        `;
+
+    });
+
+}
+else{
+
+    courseGrid.innerHTML = `
+
+    <div class="course-card">
+
+        <h3>
+            No Roadmap Found
+        </h3>
+
+        <p>
+            Create a new course first.
+        </p>
+
+    </div>
+
+    `;
+
+}
+
+</script>
+</body>
+</html>

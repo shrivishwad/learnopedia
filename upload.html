@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Course | Learnopedia</title>
+    <link rel="stylesheet" href="css/upload.css">
+    <link rel="icon" href="logo.png">
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="logo">
+            <img src="logo.png" alt="Logo">
+            <span>LEARNOPEDIA</span>
+        </div>
+
+        <a href="dashboard.html" class="dashboard-btn">
+            Dashboard
+        </a>
+    </nav>
+
+    <!-- MAIN CONTAINER -->
+    <section class="upload-container">
+
+        <div class="upload-header">
+            <h1>Start a New Course</h1>
+
+            <p>
+                Upload a syllabus or enter a learning goal.
+                Our AI will generate a personalized roadmap,
+                learning modules, quizzes, and resources.
+            </p>
+        </div>
+
+        <!-- TABS -->
+        <div class="tab-container">
+
+            <button class="tab-btn active" onclick="showTab('upload', event)">
+                Upload Syllabus
+            </button>
+
+            <button class="tab-btn" onclick="showTab('goal', event)">
+                Learning Goal
+            </button>
+
+        </div>
+
+        <!-- UPLOAD TAB -->
+        <div class="tab-content active-tab" id="upload">
+
+            <div class="upload-box">
+
+                <div class="upload-icon">
+                    📄
+                </div>
+
+                <h2>Drag & Drop Your Syllabus</h2>
+
+                <p>
+                    PDF, DOCX or TXT files supported
+                </p>
+
+                <input
+                        type="file"
+                        id="fileInput"
+                        accept=".pdf"
+                    />
+                    <p id="fileName"></p>
+
+                <label for="fileInput" class="upload-btn">
+                    Choose File
+                </label>
+
+            </div>
+
+        </div>
+
+        <!-- GOAL TAB -->
+        <div class="tab-content" id="goal">
+
+            <div class="goal-box">
+
+                <h2>What Would You Like To Learn?</h2>
+
+                <input
+                    type="text"
+                    id="goalInput"
+                    placeholder="Example: Become a Data Analyst"
+                    class="goal-input"
+                >
+
+                <div class="suggestions">
+
+                    <button onclick="setGoal('Data Analyst')">Data Analyst</button>
+
+                    <button onclick="setGoal('Business Analyst')">Business Analyst</button>
+
+                    <button onclick="setGoal('Product Manager')">Product Manager</button>
+
+                    <button onclick="setGoal('SQL')">SQL</button>
+
+                    <button onclick="setGoal('Python')">Python</button>
+
+                    <button onclick="setGoal('Machine Learning')">Machine Learning</button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- GENERATE BUTTON -->
+
+        <div class="generate-section">
+
+            <button class="generate-btn" onclick="generateRoadmap()">
+                Generate AI Roadmap 🚀
+            </button>
+
+        </div>
+
+    </section>
+
+    <!-- PROCESS -->
+
+    <section class="process">
+
+        <h2>How Learnopedia Works</h2>
+
+        <div class="process-grid">
+
+            <div class="process-card">
+                <h3>📥 Upload</h3>
+                <p>Upload your syllabus or learning goal.</p>
+            </div>
+
+            <div class="process-card">
+                <h3>🧠 Analyze</h3>
+                <p>AI extracts topics and prerequisites.</p>
+            </div>
+
+            <div class="process-card">
+                <h3>🗺️ Build</h3>
+                <p>Create a structured learning roadmap.</p>
+            </div>
+
+            <div class="process-card">
+                <h3>📚 Learn</h3>
+                <p>Study using curated resources and quizzes.</p>
+            </div>
+
+        </div>
+
+    </section>
+
+    <script>
+
+        function showTab(tabId, event) {
+
+            const tabs = document.querySelectorAll(".tab-content");
+            const buttons = document.querySelectorAll(".tab-btn");
+
+            tabs.forEach(tab => {
+                tab.classList.remove("active-tab");
+            });
+
+            buttons.forEach(btn => {
+                btn.classList.remove("active");
+            });
+
+            document.getElementById(tabId).classList.add("active-tab");
+
+            event.target.classList.add("active");
+        }
+
+        function setGoal(goal) {
+
+            document.getElementById("goalInput").value = goal;
+
+        }
+        async function generateRoadmap() {
+
+    try {
+
+        /* =========================
+           PDF MODE
+        ========================= */
+
+        const file =
+            document.getElementById(
+                "fileInput"
+            ).files[0];
+
+        if(file){
+
+            const formData =
+                new FormData();
+
+            formData.append(
+                "pdf",
+                file
+            );
+
+            const response =
+                await fetch(
+                    "http://localhost:5000/api/upload-pdf",
+                    {
+                        method:"POST",
+                        body:formData
+                    }
+                );
+
+            const data =
+                await response.json();
+
+            console.log(
+                "PDF Roadmap:",
+                data
+            );
+
+            if(data.success === false){
+
+                alert(
+                    data.message
+                );
+
+                return;
+            }
+
+           localStorage.removeItem(
+    "completedTopics"
+);
+
+localStorage.setItem(
+    "roadmap",
+    JSON.stringify(data)
+);
+
+            window.location.href =
+                "dashboard.html";
+
+            return;
+
+        }
+
+        /* =========================
+           GOAL MODE
+        ========================= */
+
+        const goal =
+            document.getElementById(
+                "goalInput"
+            )?.value ||
+            "Data Structures";
+
+ const existingRoadmap =
+JSON.parse(
+    localStorage.getItem(
+        "roadmap"
+    )
+);
+
+if(
+    existingRoadmap &&
+    existingRoadmap.course &&
+    existingRoadmap.modules
+){
+
+    const confirmNewCourse =
+    confirm(
+        "You already have a course loaded.\n\nStart a new course and erase current progress?"
+    );
+
+    if(!confirmNewCourse){
+
+        window.location.href =
+        "dashboard.html";
+
+        return;
+    }
+
+    localStorage.removeItem(
+        "roadmap"
+    );
+
+    localStorage.removeItem(
+        "completedTopics"
+    );
+}
+
+        const response =
+            await fetch(
+                "http://localhost:5000/api/roadmap",
+                {
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":
+                        "application/json"
+                    },
+
+                    body:JSON.stringify({
+                        syllabus:goal
+                    })
+                }
+            );
+
+        const data =
+            await response.json();
+
+        console.log(
+            "Roadmap received:",
+            data
+        );
+
+        if(data.success === false){
+
+            alert(
+                data.message
+            );
+
+            return;
+        }
+
+      localStorage.removeItem(
+    "completedTopics"
+);
+
+localStorage.setItem(
+    "roadmap",
+    JSON.stringify(data)
+);
+
+        window.location.href =
+            "dashboard.html";
+
+    }
+
+    catch(error){
+
+        console.error(error);
+
+        alert(
+            "Could not connect to backend server."
+        );
+
+    }
+
+}
+document.getElementById("fileInput")
+.addEventListener("change", function(){
+
+    const file = this.files[0];
+
+    if(file){
+
+        document.getElementById(
+            "fileName"
+        ).innerText =
+        "📄 " + file.name;
+
+    }
+
+});
+
+    </script>
+
+</body>
+</html>

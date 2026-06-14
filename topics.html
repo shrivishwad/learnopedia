@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Module Topics | Learnopedia</title>
+
+<link rel="stylesheet" href="css/topics.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+
+        <h1 id="moduleTitle">
+            Loading Module...
+        </h1>
+
+        <a href="dashboard.html">
+            ← Back to Dashboard
+        </a>
+
+    </div>
+
+    <div class="topics-section">
+
+        <h2>
+            Topics Covered
+        </h2>
+
+        <div id="topicsContainer">
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+const selectedModule =
+JSON.parse(
+    localStorage.getItem(
+        "selectedModule"
+    )
+);
+
+    const completedTopics =
+JSON.parse(
+    localStorage.getItem(
+        "completedTopics"
+    )
+) || {};
+
+
+const topicsContainer =
+document.getElementById(
+    "topicsContainer"
+);
+
+
+const totalTopics =
+selectedModule.topics.length;
+
+let completedCount = 0;
+
+selectedModule.topics.forEach(
+    topic => {
+
+    if(
+        completedTopics[topic]
+    ){
+        completedCount++;
+    }
+
+});
+
+const progress =
+Math.round(
+(
+    completedCount /
+    totalTopics
+) * 100
+);
+document.getElementById(
+    "moduleTitle"
+).innerHTML =
+
+selectedModule.title +
+
+`<br>
+<small>
+Progress: ${progress}%
+</small>`;
+
+if(
+    selectedModule &&
+    selectedModule.topics &&
+    selectedModule.topics.length > 0
+){
+
+    selectedModule.topics.forEach(
+        topic => {
+
+        topicsContainer.innerHTML += `
+
+        <div class="topic-card">
+
+            <h3>
+                ${
+completedTopics[topic]
+? "✅"
+: "📘"
+}
+${topic}
+            </h3>
+
+            <button
+                onclick="openTopic('${topic}')"
+            >
+${
+completedTopics[topic]
+?
+"Revision"
+:
+"Start Learning"
+}            </button>
+
+        </div>
+
+        `;
+
+    });
+
+}
+else{
+
+    topicsContainer.innerHTML = `
+
+    <div class="topic-card">
+
+        <h3>
+            No Topics Found
+        </h3>
+
+    </div>
+
+    `;
+
+}
+
+function openTopic(topic){
+
+    localStorage.setItem(
+        "selectedTopic",
+        JSON.stringify({
+            module:
+            selectedModule.title,
+
+            topic:
+            topic
+        })
+    );
+
+    window.location.href =
+        "module.html";
+
+}
+
+</script>
+
+</body>
+</html>
